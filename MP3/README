@@ -1,0 +1,30 @@
+Do the below on each VM.
+
+1. Setup and Build
+    a. Install Go as per website instructions if necessary, using the default paths
+    b. cd ~
+    c. export GOPATH=$HOME/go
+
+    e. mkdir go
+    f. mkdir go/bin
+    g. git clone https://gitlab.engr.illinois.edu/cs425-mliu60-bwei6/cs425-mliu60-bwei6-mp3.git go/src
+    h. go build MP3/MP3Daemon
+
+2. Running
+    a. First, perform all commands indicated by 1. and ensure all environmental variables are set correctly
+    b. cd ~
+    c. ./MP3Daemon
+       Please see the code for the configuration file format. The configuration file contains a list of
+       introducers and is located at MP3/MP3Daemon/config.json.
+    d. Membership commands:
+       To join the group, type join and press Enter.
+       To leave the group, type leave and press Enter. Note that this will quit the program - restart the program to
+       rejoin. A short wait may be required during to lingering sockets.
+       To show the current membership list, type list and press Enter.
+       To show the current id, type id and press Enter.
+    e. SDFS commands (must join first):
+       1) put localfilename sdfsfilename: create or update a SDFS file
+       2) get sdfsfilename localfilename: retrieve a SDFS file
+       3) delete sdfsfilename: delete a SDFS file
+       4) ls sdfsfilename: list all machine addresses where this file is currently being stored
+       5) store: list all files currently being stored at this machine

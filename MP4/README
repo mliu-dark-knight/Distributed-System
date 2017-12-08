@@ -1,0 +1,57 @@
+Do the below on each VM, except as otherwise specified.
+
+1. Setup and Build
+    a. Install Go as per website instructions if necessary, using default paths and settings
+    b. cd ~
+    c. export GOPATH=$HOME/go
+    d. Download the latest version of Spark and extract it to ~.
+    e. Set spark up for 7 workers located on fa17-cs425-g24-04.cs.illinois.edu
+    through fa17-cs425-g24-10.cs.illinois.edu by setting appropriate conf/slaves files on every VM
+    f. Set up ssh keys so that any VM can access any other VM via ssh without a password
+    g. Install scala-sbt via website instructions if necessary, using default paths and settings
+
+    h. mkdir go
+    i. mkdir go/bin
+    j. git clone https://gitlab.engr.illinois.edu/cs425-mliu60-bwei6/cs425-mliu60-bwei6-mp4.git go/src
+    k. go build MP4/MP4Daemon
+    l. cd ~/go/src/MP4/MP4SparkPageRank
+    m. sbt package
+    n. cd ~/go/src/MP4/MP4SparkShortestPath
+    o. sbt package
+
+2. Running
+    a. First, perform all commands indicated by 1. and ensure all environmental variables are set correctly
+    b. cd ~
+    c. ./MP4Daemon
+       Please see the code for the configuration file format. The configuration file contains a list of
+       introducers and is located at MP4/MP4Daemon/config.json.
+    d. Membership commands:
+       To join the group, type join and press Enter.
+       To leave the group, type leave and press Enter. Note that this will quit the program - restart the program to
+       rejoin. A short wait may be required due to lingering sockets.
+       To show the current membership list, type list and press Enter.
+       To show the current id, type id and press Enter.
+    e. SDFS commands (must join first):
+       1) put localfilename sdfsfilename: create or update a SDFS file
+       2) get sdfsfilename localfilename: retrieve a SDFS file
+       3) delete sdfsfilename: delete a SDFS file
+       4) ls sdfsfilename: list all machine addresses where this file is currently being stored
+       5) store: list all files currently being stored at this machine
+    f. Sava commands (must join first):
+       A) pr graphfilename numberofiteratons : run PageRank
+       B) sp graphfilename startingnodeid : run ShortestPath
+
+       The Sava graph file format is an undirected edge list with a two line header. The first line contains a single
+       integer and is the number of vertices in the graph. The second line contains a single integer and is the largest
+       vertex id in the graph. All remaining lines have two integers separated by a tab, each line specifying a edge
+       between the nodes with ids as specified by the aforementioned integers. Nodes start numbering from 1.
+    h. Spark commands:
+       Replace ~/spark-2.2.0-bin-hadoop2.7 as necessary with the path to spark.
+       a) Start the Spark master and workers.
+       On fa17-cs425-g24-02.cs.illinois.edu, ~/spark-2.2.0-bin-hadoop2.7/sbin/start-all.sh
+       b) To run PageRank on the Amazon graph, on fa17-cs425-g24-01.cs.illinois.edu, do: ~/spark-2.2.0-bin-hadoop2.7/bin/spark-submit --master spark://172.22.146.233:7077 --deploy-mode client ~/go/src/MP4/MP4SparkPageRank/target/scala-2.11/pagerankspark_2.11-1.0.jar ~/go/src/MP4/MP4SparkPageRank/com-amazon.ungraph.spark.txt <numberofiterations>
+       c) To run ShortestPath on the Amazon graph, on fa17-cs425-g24-01.cs.illinois.edu, do: ~/spark-2.2.0-bin-hadoop2.7/bin/spark-submit --master spark://172.22.146.233:7077 --deploy-mode client ~/go/src/MP4/MP4SparkShortestPath/target/scala-2.11/shortestpathspark_2.11-1.0.jar ~/go/src/MP4/MP4SparkShortestPath/com-amazon.ungraph.spark.txt <startingnodeid>
+       d) To run PageRank on an arbitrary graph, on fa17-cs425-g24-01.cs.illinois.edu, do: ~/spark-2.2.0-bin-hadoop2.7/bin/spark-submit --master spark://172.22.146.233:7077 --deploy-mode client ~/go/src/MP4/MP4SparkPageRank/target/scala-2.11/pagerankspark_2.11-1.0.jar <graphfilename> <numberofiterations>
+       e) To run ShortestPath on an arbitrary graph, on fa17-cs425-g24-01.cs.illinois.edu, do: ~/spark-2.2.0-bin-hadoop2.7/bin/spark-submit --master spark://172.22.146.233:7077 --deploy-mode client ~/go/src/MP4/MP4SparkShortestPath/target/scala-2.11/shortestpathspark_2.11-1.0.jar <graphfilename> <startingnodeid>
+       f) Kill the Spark master and workers.
+          On fa17-cs425-g24-02.cs.illinois.edu, ~/spark-2.2.0-bin-hadoop2.7/sbin/stop-all.sh

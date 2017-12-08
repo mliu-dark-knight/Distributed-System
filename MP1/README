@@ -1,0 +1,59 @@
+Do the below on each VM.
+
+1. Setup and Build
+    a. Install Go as per website instructions if necessary, using the default paths
+    b. cd ~
+    c. export GOPATH=$HOME/go
+
+    e. mkdir go
+    f. mkdir go/bin
+    g. git clone https://gitlab.engr.illinois.edu/cs425-mliu60-bwei6/cs425-bwei6-mliu60-mp1.git go/src
+    h. go build MP1/MP1Client
+    i. go build MP1/MP1Server
+
+    Note that this will cause Section 4 to fail if the below commands are being run from a VM.
+    This is used only for demo purposes. Repeat steps a-i above to undo the effects of this command.
+    j. (Optional) chmod +x ~/go/src/MP1/script/unreplicate_logfiles.sh
+    k. ~/go/src/MP1/script/unreplicate_logfiles.sh
+
+2. Running Client
+    a. First, perform all commands indicated by 1. Install Go and ensure all environmental variables are set correctly
+    b. cd ~
+    c. ./MP1Client --grep_pattern something --json_config_path ~/go/src/MP1/MP1Client/config.json. Please see the code
+       for the configuration file format.
+
+3. Running Server
+    a. First, perform all commands indicated by 1. Install Go and ensure all environmental variables are set correctly
+    b. cd ~
+    c. ./MP1Server or ./MP1Server --port_number=8001. By default, the port number is 8001. Please make sure this is
+       consistent with the configuration file used with the client!
+
+4. Testing
+    a. First, perform all commands indicated by 3. Building and Running Server and start a server on all machines on the
+       corresponding port as listed in the configuration file that would be passed to MP1Client
+    b. cd ~
+    c. go test MP1/MP1Client -run=TestExistRemoPtn
+    d. go test MP1/MP1Client -run=TestRemoPtn
+    e. go test MP1/MP1Client -run=TestRndRemoPtn
+
+    To optionally change the inputs for the random tests, do the following on any VM
+    A. cd ~
+    B. chmod +x ~/go/src/MP1/script/generate_random_log.sh
+    C. ~/go/src/MP1/script/generate_random_log.sh
+    D. cd ~/go/src
+    E. Commit to git
+    F. Repeat step 1 and then steps a-d above
+
+5. Benchmarking
+    a. First, perform all commands indicated by 3. Building and Running Server and start a server on all machines on the
+       corresponding port as listed in the configuration file that would be passed to MP1Client
+    b. cd ~
+    c. go test MP1/MP1Client -bench=Everything -count=5 -run=^a | grep -E "Benchmark|ns\/op"
+    d. The format is as follows:
+
+    Test Name                                         First Line of Output from MP1Client
+    Number of Times Test Was Run                        Time Per Iteration in ns/iteration
+
+    e.g.
+    BenchmarkEverything/BenchmarkRemotePatternModeratelyFrequent5Machines-8         	JSON Configuration Decoding Completed!
+              2	 558184794 ns/op
